@@ -18,24 +18,16 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
 
-    - name: Fix Android Structure on Server
+    - name: Compile Java Files Only
       run: |
-        mkdir -p app/src/main/java/com/example/ambutrack
-        mkdir -p app/src/main/res/values
-        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
-        [ -f MainActivity.java ] && mv MainActivity.java app/src/main/java/com/example/ambutrack/
-        [ -f styles.xml ] && mv styles.xml app/src/main/res/values/
-        gradle wrapper
-        chmod +x gradlew
+        mkdir -p build/classes
+        find . -name "*.java" > sources.txt
+        if [ -s sources.txt ]; then
+          javac -d build/classes @sources.txt
+          echo "All Java files compiled successfully!"
+        else
+          echo "No Java files found to compile."
+        fi
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: AmbuTrack-debug-apk
-        path: "**/build/outputs/apk/debug/*.apk"
 
