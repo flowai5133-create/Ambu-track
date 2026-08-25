@@ -20,12 +20,17 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Setup Gradle
+    - name: Fix Android Structure on Server
       run: |
+        mkdir -p app/src/main/java/com/example/ambutrack
+        mkdir -p app/src/main/res/values
+        [ -f AndroidManifest.xml ] && mv AndroidManifest.xml app/src/main/
+        [ -f MainActivity.java ] && mv MainActivity.java app/src/main/java/com/example/ambutrack/
+        [ -f styles.xml ] && mv styles.xml app/src/main/res/values/
         gradle wrapper
         chmod +x gradlew
 
-    - name: Build with Gradle
+    - name: Build Debug APK
       run: ./gradlew assembleDebug
 
     - name: Upload APK
@@ -33,3 +38,4 @@ jobs:
       with:
         name: AmbuTrack-debug-apk
         path: "**/build/outputs/apk/debug/*.apk"
+
